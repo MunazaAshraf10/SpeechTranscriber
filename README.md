@@ -37,7 +37,7 @@ DEEPGRAM_API_KEY=your_deepgram_api_key
 
 ### 5. Run the Backend (FastAPI)
 Start the FastAPI server by running the following command:
-uvicorn main:app --reload
+uvicorn backend:app --reload
 The server will be running on http://127.0.0.1:8000. You can interact with the API via a frontend or Postman.
 
 ### 6. Run the Frontend (Static File Server)
