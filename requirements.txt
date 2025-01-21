@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+requests
+python-dotenv  # Optional, for environment variables management
+python-multipart
+hhtpx

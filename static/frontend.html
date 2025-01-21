@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Speech Transcription</title>
+</head>
+<body>
+    <button id="start-recording">Start Recording</button>
+    <div id="transcription"></div>
+
+    <script>
+      const startButton = document.getElementById("start-recording");
+      const transcriptionDiv = document.getElementById("transcription");
+      let mediaRecorder;
+      let audioChunks = [];
+
+      startButton.addEventListener("click", async () => {
+        if (!mediaRecorder) {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          
+          mediaRecorder.ondataavailable = event => {
+            audioChunks.push(event.data);
+          };
+          
+          mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            sendAudioToBackend(audioBlob);
+          };
+
+          mediaRecorder.start();
+          startButton.textContent = "Stop Recording";
+        } else {
+          mediaRecorder.stop();
+          mediaRecorder = null;
+          startButton.textContent = "Start Recording";
+        }
+      });
+
+      function sendAudioToBackend(audioBlob) {
+        const formData = new FormData();
+        formData.append("audio", audioBlob);
+
+        fetch("/upload-audio", {
+          method: "POST",
+          body: formData
+        }).then(response => {
+          return response.json();
+        }).then(data => {
+          transcriptionDiv.innerHTML = data.transcription;
+        });
+      }
+    </script>
+</body>
+</html>
